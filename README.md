@@ -23,6 +23,10 @@ The service performs the following tasks:
 ### Prerequisites
 - Go 1.21+
 
+### Configuration
+The service loads configuration either from environment variables or from a `.config.json` file in the root directory. 
+A sample `.config.json` has been provided. **Note:** `.config.json` is ignored by Git to avoid leaking credentials.
+
 ### Build and Run
 ```bash
 # Fetch dependencies
