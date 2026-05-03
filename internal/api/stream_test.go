@@ -103,8 +103,8 @@ func TestStreamServer_SubscribeSignals_Integration(t *testing.T) {
 	if sig1.Api != "FCM" {
 		t.Errorf("expected API FCM, got %s", sig1.Api)
 	}
-	if sig1.Level != string(models.LevelCritical) {
-		t.Errorf("expected level %s, got %s", models.LevelCritical, sig1.Level)
+	if sig1.Level != pb.SignalLevel_CRITICAL {
+		t.Errorf("expected level %v, got %v", pb.SignalLevel_CRITICAL, sig1.Level)
 	}
 
 	// Check Second Message (INFO)
@@ -112,7 +112,7 @@ func TestStreamServer_SubscribeSignals_Integration(t *testing.T) {
 	if sig2.Api != "FCM" {
 		t.Errorf("expected API FCM, got %s", sig2.Api)
 	}
-	if sig2.Level != string(models.LevelInfo) {
-		t.Errorf("expected level %s, got %s", models.LevelInfo, sig2.Level)
+	if sig2.Level != pb.SignalLevel_INFO {
+		t.Errorf("expected level %v, got %v", pb.SignalLevel_INFO, sig2.Level)
 	}
 }

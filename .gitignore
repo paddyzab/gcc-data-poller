@@ -33,3 +33,6 @@ go.work.sum
 
 # Config files with credentials
 .config.json
+
+#Macos
+.DS_Store

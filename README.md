@@ -10,13 +10,14 @@ The service performs the following tasks:
 
 ## Project Structure
 - `cmd/server/main.go`: The main entrypoint. Starts the poller and the gRPC server.
+- `cmd/client/main.go`: A demo client to connect to the gRPC server and receive signals.
 - `internal/config`: Loads application configuration via environment variables.
 - `internal/models`: Shared types between components.
 - `internal/poller`: Handles polling the GCP metrics.
 - `internal/processor`: Contains the business logic to generate action signals.
 - `internal/api`: Implements the gRPC streaming server.
 - `api/proto`: Contains the gRPC protocol buffers definitions.
-- `pkg/pb`: Contains the generated gRPC code (currently mocked for PoC).
+- `pkg/pb`: Contains the generated gRPC code from `protoc`.
 
 ## Running the PoC
 
@@ -37,14 +38,30 @@ make run
 ```
 The server will start the poller in the background and expose the gRPC server on port `50051`.
 
-## Generating gRPC Code
-A mock implementation is provided in `pkg/pb/signals_mock.go` to allow the PoC to compile without `protoc`. 
+### Integrating with the Server (PoC)
 
-If you want to generate the actual gRPC code:
+To verify the integration or connect a downstream service to this PoC, follow these steps:
+
+#### 1. Run the Demo Client
+A demo client is included in the project to instantly test the streaming connection. In a separate terminal, run:
+```bash
+go run ./cmd/client
+```
+The client will connect to `localhost:50051`, subscribe to "FCM" signals, and stream them to your terminal in real-time.
+
+#### 2. Connect Your Own Services
+To integrate a different downstream Go service with this poller:
+1. Copy the `api/proto/signals.proto` file into your downstream service's repository.
+2. Compile the protobuf file in your repository to generate the Go client stubs using `protoc`.
+3. Dial the gRPC connection and use `pb.NewSignalStreamerClient(conn)` to initiate a subscription stream, just as demonstrated in the `cmd/client/main.go` file.
+
+## Generating gRPC Code
+If you modify `api/proto/signals.proto`, you will need to regenerate the gRPC code:
+
 1. Install `protoc` (Protocol Buffers compiler).
 2. Install Go plugins:
 ```bash
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33.0
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
 ```
 3. Run `make proto`

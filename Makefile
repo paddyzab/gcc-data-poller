@@ -14,6 +14,7 @@ tidy:
 
 proto:
 	@echo "Requires protoc and grpc-go plugins"
-	protoc --go_out=. --go_opt=paths=source_relative \
-           --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-           api/proto/signals.proto
+	mkdir -p pkg/pb
+	protoc --go_out=pkg/pb --go_opt=paths=source_relative \
+           --go-grpc_out=pkg/pb --go-grpc_opt=paths=source_relative \
+           -I=api/proto api/proto/signals.proto

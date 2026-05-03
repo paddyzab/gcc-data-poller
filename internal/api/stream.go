@@ -6,13 +6,16 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/paddyzab/gcc-data-poller/internal/config"
+	"github.com/paddyzab/gcc-data-poller/internal/models"
 	"github.com/paddyzab/gcc-data-poller/internal/processor"
 	"github.com/paddyzab/gcc-data-poller/pkg/pb"
 )
 
 type StreamServer struct {
+	pb.UnimplementedSignalStreamerServer
 	cfg       *config.Config
 	processor *processor.SignalProcessor
 	server    *grpc.Server
@@ -63,10 +66,21 @@ func (s *StreamServer) SubscribeSignals(req *pb.SubscribeRequest, stream pb.Sign
 			}
 
 			// Convert internal model to pb model
+			var pbLevel pb.SignalLevel
+			switch sig.Level {
+			case models.LevelInfo:
+				pbLevel = pb.SignalLevel_INFO
+			case models.LevelWarning:
+				pbLevel = pb.SignalLevel_WARNING
+			case models.LevelCritical:
+				pbLevel = pb.SignalLevel_CRITICAL
+			}
+
 			pbSig := &pb.ActionSignal{
-				Api:     sig.API,
-				Level:   string(sig.Level),
-				Message: sig.Message,
+				Api:       sig.API,
+				Timestamp: timestamppb.New(sig.Timestamp),
+				Level:     pbLevel,
+				Message:   sig.Message,
 			}
 
 			if err := stream.Send(pbSig); err != nil {
