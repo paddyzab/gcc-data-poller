@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package signals.v1;
+
+option go_package = "github.com/paddyzab/gcc-data-poller/pkg/pb;pb";
+
+import "google/protobuf/timestamp.proto";
+
+// The signal service definition.
+service SignalStreamer {
+  // Server streaming RPC for subscribing to signals
+  rpc SubscribeSignals (SubscribeRequest) returns (stream ActionSignal) {}
+}
+
+// The request message containing optional filters
+message SubscribeRequest {
+  // e.g. "FCM", "IdentityToolkit", or empty for all
+  string api_filter = 1; 
+}
+
+// The response message containing the signal
+message ActionSignal {
+  string api = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  SignalLevel level = 3;
+  string message = 4;
+}
+
+enum SignalLevel {
+  INFO = 0;
+  WARNING = 1;
+  CRITICAL = 2;
+}
